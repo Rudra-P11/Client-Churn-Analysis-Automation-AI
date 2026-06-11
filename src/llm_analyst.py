@@ -1,7 +1,8 @@
 """
 llm_analyst.py
 ==============
-Gemini-powered analysis layer.  Four distinct LLM tasks:
+Multi-provider LLM analysis layer (Gemini and local Ollama support).
+Four distinct LLM tasks:
 
   1. CSM Note Parsing   — Extract structured signals from messy free-text
   2. NPS Translation    — Translate non-English comments + extract sentiment
@@ -26,10 +27,15 @@ load_dotenv(_project_root / ".env")
 load_dotenv(_src_dir / ".env")
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Gemini client setup
+# LLM client setup & routing
 # ─────────────────────────────────────────────────────────────────────────────
 
-def _get_client() -> genai.GenerativeModel:
+def _get_client() -> genai.GenerativeModel | None:
+    """Retrieve Gemini client if selected, otherwise return None for Ollama."""
+    provider = os.getenv("LLM_PROVIDER", "gemini").lower()
+    if provider == "ollama":
+        return None
+
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
         raise RuntimeError(
@@ -65,6 +71,37 @@ def _call_gemini(prompt: str, model: genai.GenerativeModel, retries: int = 4) ->
                 raise RuntimeError(f"Gemini API call failed after {retries} retries: {e}")
 
 
+def _call_ollama(prompt: str) -> str:
+    """Call local Ollama server via standard generation API."""
+    import requests
+    host = os.getenv("OLLAMA_HOST", "http://localhost:11434").rstrip('/')
+    model = os.getenv("OLLAMA_MODEL", "gemma2")
+    url = f"{host}/api/generate"
+    payload = {
+        "model": model,
+        "prompt": prompt,
+        "stream": False,
+        "options": {
+            "temperature": 0.3,
+        }
+    }
+    try:
+        response = requests.post(url, json=payload, timeout=90)
+        response.raise_for_status()
+        return response.json().get("response", "").strip()
+    except Exception as e:
+        raise RuntimeError(f"Ollama API call failed for model '{model}': {e}")
+
+
+def _call_llm(prompt: str, model: Any = None) -> str:
+    """Delegator function supporting both Gemini and Ollama providers."""
+    provider = os.getenv("LLM_PROVIDER", "gemini").lower()
+    if provider == "ollama":
+        return _call_ollama(prompt)
+    else:
+        return _call_gemini(prompt, model)
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Task 1: CSM Note Sentiment & Signal Extraction
 # ─────────────────────────────────────────────────────────────────────────────
@@ -88,11 +125,10 @@ For each note, extract:
 
 Respond ONLY with valid JSON. No markdown, no explanation."""
 
-def extract_csm_signals(notes: list[str], model: genai.GenerativeModel) -> dict:
+def extract_csm_signals(notes: list[str], model: Any) -> dict:
     """
     Task 1: Given a list of raw CSM note strings for one account,
     extract structured sentiment and signals.
-    Returns dict with sentiment_score (0-1, inverted to risk: 1-score), risk_flags, etc.
     """
     if not notes:
         return {
@@ -115,7 +151,7 @@ CSM Notes to analyze:
 Return JSON with keys: sentiment_score, risk_flags, positive_signals, key_stakeholder_concern, recommended_action"""
 
     try:
-        raw = _call_gemini(prompt, model)
+        raw = _call_llm(prompt, model)
         # Strip markdown code fences if present
         raw = raw.strip()
         if raw.startswith("```"):
@@ -144,11 +180,10 @@ Return JSON with keys: sentiment_score, risk_flags, positive_signals, key_stakeh
 # ─────────────────────────────────────────────────────────────────────────────
 
 def translate_and_analyze_nps(comment: str, score: float,
-                               model: genai.GenerativeModel) -> dict:
+                               model: Any) -> dict:
     """
     Task 2: Translate non-English NPS comment to English and extract themes.
     Returns dict with: english_translation, detected_language, key_themes, sentiment_alignment.
-    sentiment_alignment: whether the verbatim matches the numeric score.
     """
     if not comment or not comment.strip():
         return {
@@ -179,7 +214,7 @@ Respond ONLY with JSON:
 }}"""
 
     try:
-        raw = _call_gemini(prompt, model)
+        raw = _call_llm(prompt, model)
         raw = raw.strip()
         if raw.startswith("```"):
             raw = raw.split("```")[1]
@@ -208,7 +243,7 @@ Avoid filler phrases. Lead with the most critical signal.
 If there's a competitor mentioned, name them.
 If there's a regulatory or technical deadline, be specific about the date."""
 
-def generate_account_narrative(account_data: dict, model: genai.GenerativeModel) -> dict:
+def generate_account_narrative(account_data: dict, model: Any) -> dict:
     """
     Task 3: Generate a plain-English risk narrative for one account.
     Returns dict with: summary, risk_drivers, recommended_actions, urgency_note.
@@ -275,7 +310,7 @@ Write a renewal risk briefing with:
 Return ONLY valid JSON with these 4 keys."""
 
     try:
-        raw = _call_gemini(prompt, model)
+        raw = _call_llm(prompt, model)
         raw = raw.strip()
         if raw.startswith("```"):
             raw = raw.split("```")[1]
@@ -300,7 +335,7 @@ Return ONLY valid JSON with these 4 keys."""
 def generate_portfolio_insights(
     high_risk_accounts: list[dict],
     all_accounts_summary: dict,
-    model: genai.GenerativeModel,
+    model: Any,
 ) -> dict:
     """
     Task 4: Analyse the full at-risk portfolio and surface non-obvious patterns
@@ -362,7 +397,7 @@ Return ONLY valid JSON:
 }}"""
 
     try:
-        raw = _call_gemini(prompt, model)
+        raw = _call_llm(prompt, model)
         raw = raw.strip()
         if raw.startswith("```"):
             raw = raw.split("```")[1]
@@ -395,6 +430,8 @@ def run_llm_analysis(
 
     Returns (enriched_renewing_df, portfolio_insights_dict)
     """
+    provider = os.getenv("LLM_PROVIDER", "gemini").lower()
+    is_gemini = (provider == "gemini")
     model = _get_client()
 
     renewing = renewing_df.copy()
@@ -411,7 +448,8 @@ def run_llm_analysis(
             print(f"  → {row['account_name']} ({len(notes)} note(s))")
         result = extract_csm_signals(notes if isinstance(notes, list) else [], model)
         csm_results[aid] = result
-        time.sleep(4)  # Respect free-tier rate limit (~15 RPM)
+        if is_gemini:
+            time.sleep(4)  # Respect free-tier rate limit (~15 RPM)
 
     # Merge CSM sentiment into renewing
     renewing["csm_sentiment_score"] = renewing["account_id"].map(
@@ -442,7 +480,8 @@ def run_llm_analysis(
             model,
         )
         nps_results[aid] = result
-        time.sleep(4)
+        if is_gemini:
+            time.sleep(4)
 
     def _get_translation(aid):
         if aid in nps_results:
@@ -490,7 +529,8 @@ def run_llm_analysis(
             print(f"  → {row['account_name']} ({row['risk_tier']} risk, score={row['risk_score']:.2f})")
         narrative = generate_account_narrative(row.to_dict(), model)
         narratives[aid] = narrative
-        time.sleep(6)  # Respect free-tier rate limit
+        if is_gemini:
+            time.sleep(6)  # Respect free-tier rate limit
 
     renewing["narrative_summary"]      = renewing["account_id"].map(
         lambda aid: narratives.get(aid, {}).get("summary", ""))

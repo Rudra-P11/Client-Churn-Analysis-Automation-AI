@@ -105,7 +105,8 @@ def main():
                 "key_stakeholder_concern": result.get("key_stakeholder_concern"),
                 "csm_recommended_action":  result.get("recommended_action"),
             })
-            time.sleep(4)
+            if os.getenv("LLM_PROVIDER", "gemini").lower() == "gemini":
+                time.sleep(4)
     else:
         print("[1/4] CSM signals - already complete, skipping.")
 
@@ -126,7 +127,8 @@ def main():
                 "sentiment_alignment": result.get("sentiment_alignment", "consistent"),
                 "alignment_note":      result.get("alignment_note", ""),
             })
-            time.sleep(4)
+            if os.getenv("LLM_PROVIDER", "gemini").lower() == "gemini":
+                time.sleep(4)
     else:
         print("[2/4] NPS translations - already complete, skipping.")
 
@@ -143,7 +145,8 @@ def main():
                 "narrative_actions":      narrative.get("recommended_actions", []),
                 "narrative_urgency":      narrative.get("urgency_note", ""),
             })
-            time.sleep(6)
+            if os.getenv("LLM_PROVIDER", "gemini").lower() == "gemini":
+                time.sleep(6)
     else:
         print("[3/4] Narratives - already complete, skipping.")
 
