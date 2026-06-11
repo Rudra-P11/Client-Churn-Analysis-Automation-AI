@@ -1,12 +1,8 @@
 # Renewal Intelligence Engine
 
-> **Contentstack BizOps Take-Home Assignment** — Applied AI Engineer
-
 A production-quality renewal risk scoring and explanation tool that ingests 5 messy, multi-modal data sources, scores every account renewing in the next 90 days, and uses Gemini AI to generate actionable plain-English explanations and surface non-obvious portfolio insights.
 
 ---
-
-## 🚀 Quick Start
 
 ### 1. Install dependencies
 ```bash
