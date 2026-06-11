@@ -1,0 +1,19 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+*.class
+.venv/
+venv/
+ENV/
+
+# Environment keys
+.env
+
+# Output reports (pre-generated)
+output/risk_report.json
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
