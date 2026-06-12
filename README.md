@@ -5,7 +5,7 @@ A production-quality renewal risk intelligence and explanation platform for CS a
 
 ## 📸 Visual Showcase
 
-### 1. Dashboard Home (Light-Theme Redesign)
+### 1. Dashboard Home
 A premium, Tailwind-inspired light interface displaying structured KPI cards, filters, and risk distributions.
 ![Dashboard Home](images/dashboard_main.png)
 
@@ -13,8 +13,8 @@ A premium, Tailwind-inspired light interface displaying structured KPI cards, fi
 Clicking any card expands it to reveal inline metadata grids, AI-generated risk narrative callouts, action checklists, NPS comment translation bubbles, and custom HTML progress bars for signal contributions.
 ![Expanded Account Details](images/expanded_details.png)
 
-### 3. Light-Theme Portfolio Analytics
-Interactive Plotly charts styled to match the light theme, illustrating risk distributions, CSM portfolios, SDK migrations, and ARR risk scatter bubbles.
+### 3. Portfolio Analytics
+Interactive Plotly charts, illustrating risk distributions, CSM portfolios, SDK migrations, and ARR risk scatter bubbles.
 ![Portfolio Analytics](images/portfolio_analytics.png)
 
 ### 4. Interactive Silent Churn Spotlight
