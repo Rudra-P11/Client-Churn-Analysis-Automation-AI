@@ -19,6 +19,31 @@ import streamlit as st
 sys.path.insert(0, str(Path(__file__).parent))
 
 # ─────────────────────────────────────────────────────────────────────────────
+# SVG Icons (Lucide-inspired)
+# ─────────────────────────────────────────────────────────────────────────────
+
+SVG_TARGET = """<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>"""
+SVG_USER = """<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>"""
+SVG_MAP_PIN = """<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>"""
+SVG_AWARD = """<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>"""
+SVG_BRIEFCASE = """<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></svg>"""
+SVG_SHIELD = """<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1z"/></svg>"""
+SVG_CALENDAR = """<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>"""
+SVG_STAR = """<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>"""
+SVG_CODE = """<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>"""
+SVG_LIGHTBULB = """<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A5 5 0 0 0 8 8c0 1 .3 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>"""
+SVG_TICKET = """<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 2px;"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>"""
+SVG_ALERT_TRIANGLE = """<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>"""
+SVG_ALERT_TRIANGLE_TINY = """<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 2px;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>"""
+SVG_CHECK_CIRCLE = """<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>"""
+SVG_MESSAGE_SQUARE = """<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>"""
+SVG_BAR_CHART_2 = """<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>"""
+SVG_FILE_TEXT = """<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>"""
+SVG_GLOBE = """<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 2px;"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>"""
+SVG_VOLUME_X = """<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 2px;"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="22" y1="9" x2="16" y2="15"/><line x1="16" y1="9" x2="22" y2="15"/></svg>"""
+SVG_CLOCK = """<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 2px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>"""
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Page config
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -300,12 +325,16 @@ def progress_bar(val: float, label: str) -> str:
     """
 
 
-def kpi_block(label: str, val: str, is_warning: bool = False) -> str:
+def kpi_block(label: str, val: str, icon_svg: str = "", is_warning: bool = False) -> str:
     warn_style = "color: #ef4444; font-weight: 600;" if is_warning else "color: #1e293b; font-weight: 600;"
+    icon_html = f'<div style="color: #64748b; margin-right: 8px; display: inline-flex; align-items: center;">{icon_svg}</div>' if icon_svg else ""
     return f"""
-    <div style="padding: 0.4rem 0;">
-        <div style="font-size: 0.72rem; text-transform: uppercase; color: #64748b; letter-spacing: 0.05em; font-weight: 600; margin-bottom: 2px;">{label}</div>
-        <div style="font-size: 0.925rem; {warn_style}">{val}</div>
+    <div style="padding: 0.4rem 0; display: flex; align-items: center;">
+        {icon_html}
+        <div>
+            <div style="font-size: 0.72rem; text-transform: uppercase; color: #64748b; letter-spacing: 0.05em; font-weight: 600; margin-bottom: 2px;">{label}</div>
+            <div style="font-size: 0.925rem; {warn_style}">{val}</div>
+        </div>
     </div>
     """
 
@@ -323,10 +352,10 @@ def sdk_risk_label(sdk: str) -> str:
         return "Unknown"
     v = str(sdk).lower()
     if v.startswith("v3"):
-        return f"⚠️ {sdk} (SUNSET)"
+        return f'<span style="color: #ef4444; display: inline-flex; align-items: center; gap: 4px;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 2px;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>{sdk} (SUNSET)</span>'
     if v in ("v4.0.0", "v4.1.0"):
-        return f"🟡 {sdk} (upgrade needed)"
-    return f"✅ {sdk}"
+        return f'<span style="color: #b45309; display: inline-flex; align-items: center; gap: 4px;"><span style="background-color: #f59e0b; width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 4px;"></span>{sdk} (upgrade needed)</span>'
+    return f'<span style="color: #10b981; display: inline-flex; align-items: center; gap: 4px;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 2px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>{sdk}</span>'
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -334,9 +363,11 @@ def sdk_risk_label(sdk: str) -> str:
 # ─────────────────────────────────────────────────────────────────────────────
 
 with st.sidebar:
-    st.markdown("""
+    st.markdown(f"""
     <div style="text-align:center; padding: 1.5rem 0 1rem 0; border-bottom: 1px solid #e2e8f0; margin-bottom: 1rem;">
-        <div style="font-size:2.25rem; margin-bottom:0.25rem;">🎯</div>
+        <div style="color: #4f46e5; display: flex; justify-content: center; margin-bottom: 0.5rem;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-target"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+        </div>
         <div style="font-size:1.15rem; font-weight:700; color:#0f172a;">Renewal Intelligence</div>
         <div style="font-size:0.7rem; color:#6366f1; letter-spacing:0.08em; text-transform:uppercase; font-weight: 600; margin-top: 0.2rem;">
             Powered by Gemini
@@ -366,7 +397,7 @@ with st.sidebar:
         all_industries = sorted(df_all["industry"].dropna().unique().tolist())
         industry_filter = st.multiselect("Industry", options=all_industries, default=all_industries)
 
-        show_silent_churn = st.checkbox("🔇 Silent Churn Only", value=False)
+        show_silent_churn = st.checkbox("Silent Churn Only", value=False)
 
     st.markdown("<br><br><br>", unsafe_allow_html=True)
     st.markdown(
@@ -381,9 +412,11 @@ with st.sidebar:
 # ─────────────────────────────────────────────────────────────────────────────
 
 if report is None:
-    st.markdown("""
+    st.markdown(f"""
     <div style="text-align:center; padding: 6rem 2rem;">
-        <div style="font-size:4rem; margin-bottom:1rem;">🎯</div>
+        <div style="color: #4f46e5; display: flex; justify-content: center; margin-bottom: 1rem;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-target"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+        </div>
         <h1 style="font-size:2rem; font-weight:700; color:#1e293b; margin-bottom:0.8rem;">
             Renewal Intelligence Engine
         </h1>
@@ -422,14 +455,19 @@ df = df.sort_values("risk_score", ascending=False).reset_index(drop=True)
 # Header
 # ─────────────────────────────────────────────────────────────────────────────
 
-st.markdown("""
-<div style="margin-bottom: 2rem;">
-    <h1 style="font-size:2.2rem; font-weight:800; color:#0f172a; margin-bottom:0.25rem; letter-spacing: -0.025em;">
-        🎯 Renewal Risk Intelligence
-    </h1>
-    <p style="color:#64748b; font-size:0.95rem; font-weight: 400;">
-        Accounts renewing in the next 90 days · Core BizOps Renewal Operations Dashboard
-    </p>
+st.markdown(f"""
+<div style="margin-bottom: 2rem; display: flex; align-items: center; gap: 12px;">
+    <div style="color: #4f46e5; display: flex; align-items: center;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-target"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+    </div>
+    <div>
+        <h1 style="font-size:2.2rem; font-weight:800; color:#0f172a; margin: 0; letter-spacing: -0.025em; line-height: 1.2;">
+            Renewal Risk Intelligence
+        </h1>
+        <p style="color:#64748b; font-size:0.95rem; font-weight: 400; margin: 0; margin-top: 2px;">
+            Accounts renewing in the next 90 days · Core BizOps Renewal Operations Dashboard
+        </p>
+    </div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -491,7 +529,7 @@ with c5:
 # ─────────────────────────────────────────────────────────────────────────────
 
 st.markdown("<div style='margin-top: 1.5rem;'></div>", unsafe_allow_html=True)
-tab1, tab2, tab3 = st.tabs(["📋 Account Risk List", "📊 Portfolio Analytics", "💡 Portfolio Insights"])
+tab1, tab2, tab3 = st.tabs(["Account Risk List", "Portfolio Analytics", "Portfolio Insights"])
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -520,15 +558,16 @@ with tab1:
             nps_str = f"{int(nps)}/10" if pd.notna(nps) else "N/A"
 
             # Badges inside the header/card
+            # Badges inside the header/card
             signal_pills = ""
             if p1 > 0:
-                signal_pills += f'<span class="badge-ticket">🎫 {p1} open P1</span>'
+                signal_pills += f'<span class="badge-ticket" style="display: inline-flex; align-items: center; gap: 4px;">{SVG_TICKET} {p1} open P1</span>'
             if silent:
-                signal_pills += '<span class="badge-silent">🔇 Silent Churn</span>'
+                signal_pills += f'<span class="badge-silent" style="display: inline-flex; align-items: center; gap: 4px;">{SVG_VOLUME_X} Silent Churn</span>'
             if sdk.lower().startswith("v3"):
-                signal_pills += f'<span class="badge-tech">⚠️ Sunset SDK</span>'
+                signal_pills += f'<span class="badge-tech" style="display: inline-flex; align-items: center; gap: 4px;">{SVG_ALERT_TRIANGLE_TINY} Sunset SDK</span>'
             if days != "?" and int(days) <= 30:
-                signal_pills += f'<span class="badge-urgent">⏰ &lt;{days} days</span>'
+                signal_pills += f'<span class="badge-urgent" style="display: inline-flex; align-items: center; gap: 4px;">{SVG_CLOCK} &lt;{days} days</span>'
 
             # Expander representation of the Account Card
             emoji = {"High": "🔴", "Medium": "🟡", "Low": "🟢"}.get(tier, "🟢")
@@ -539,17 +578,17 @@ with tab1:
                 # 1. Structured KPI Block Grid
                 col_a, col_b, col_c, col_d = st.columns(4)
                 with col_a:
-                    st.markdown(kpi_block("CSM Owner", row.get("csm_name", "—")), unsafe_allow_html=True)
-                    st.markdown(kpi_block("Region", row.get("region", "—")), unsafe_allow_html=True)
+                    st.markdown(kpi_block("CSM Owner", row.get("csm_name", "—"), icon_svg=SVG_USER), unsafe_allow_html=True)
+                    st.markdown(kpi_block("Region", row.get("region", "—"), icon_svg=SVG_MAP_PIN), unsafe_allow_html=True)
                 with col_b:
-                    st.markdown(kpi_block("Plan Tier", row.get("plan_tier", "—")), unsafe_allow_html=True)
-                    st.markdown(kpi_block("Industry", row.get("industry", "—")), unsafe_allow_html=True)
+                    st.markdown(kpi_block("Plan Tier", row.get("plan_tier", "—"), icon_svg=SVG_AWARD), unsafe_allow_html=True)
+                    st.markdown(kpi_block("Industry", row.get("industry", "—"), icon_svg=SVG_BRIEFCASE), unsafe_allow_html=True)
                 with col_c:
-                    st.markdown(kpi_block("Risk Profile", f"{tier_badge(tier)} (Score: {score:.2f})"), unsafe_allow_html=True)
-                    st.markdown(kpi_block("Contract End Date", row.get("contract_end_date", "—")), unsafe_allow_html=True)
+                    st.markdown(kpi_block("Risk Profile", f"{tier_badge(tier)} (Score: {score:.2f})", icon_svg=SVG_SHIELD), unsafe_allow_html=True)
+                    st.markdown(kpi_block("Contract End Date", row.get("contract_end_date", "—"), icon_svg=SVG_CALENDAR), unsafe_allow_html=True)
                 with col_d:
-                    st.markdown(kpi_block("NPS Score", nps_str, is_warning=(pd.notna(nps) and nps < 7)), unsafe_allow_html=True)
-                    st.markdown(kpi_block("SDK Version", sdk_risk_label(sdk), is_warning=sdk.lower().startswith("v3")), unsafe_allow_html=True)
+                    st.markdown(kpi_block("NPS Score", nps_str, icon_svg=SVG_STAR, is_warning=(pd.notna(nps) and nps < 7)), unsafe_allow_html=True)
+                    st.markdown(kpi_block("SDK Version", sdk_risk_label(sdk), icon_svg=SVG_CODE, is_warning=sdk.lower().startswith("v3")), unsafe_allow_html=True)
 
                 # Status signals sub-header
                 if signal_pills:
@@ -562,15 +601,20 @@ with tab1:
                 if not narrative or "narrative generation failed" in narrative.lower():
                     narrative = "No risk narrative generated. Review structural signals, CSM call notes, and support ticket history below for direct insights."
                 
-                st.markdown("**📝 Account Narrative Analysis**")
-                st.markdown(f'<div class="narrative-box">{narrative}</div>', unsafe_allow_html=True)
+                st.markdown(f"""
+                <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; margin-top: 0.5rem; margin-bottom: 0.4rem; color: #0f172a; font-size: 0.95rem;">
+                    <div style="color: #4f46e5; display: inline-flex; align-items: center;">{SVG_FILE_TEXT}</div>
+                    <span>Account Narrative Analysis</span>
+                </div>
+                """, unsafe_allow_html=True)
+                st.markdown(f'<div class="narrative-box" style="margin-top: 0.2rem !important;">{narrative}</div>', unsafe_allow_html=True)
 
                 # Urgency note from AI
                 urgency = str(row.get("narrative_urgency", ""))
                 if urgency and "narrative generation failed" not in urgency.lower():
                     st.markdown(f"""
                     <div style="background-color: #ffedd5; border: 1px solid #fdba74; border-radius: 8px; padding: 0.75rem 1rem; margin: 0.75rem 0; font-size: 0.88rem; color: #c2410c; display: flex; gap: 8px; align-items: center;">
-                        <span style="font-size: 1.1rem;">⚡</span>
+                        <div style="color: #ea580c; display: flex; align-items: center;">{SVG_ALERT_TRIANGLE}</div>
                         <span><strong>Urgency Indicator:</strong> {urgency}</span>
                     </div>
                     """, unsafe_allow_html=True)
@@ -579,7 +623,12 @@ with tab1:
                 col_risk, col_action = st.columns(2)
 
                 with col_risk:
-                    st.markdown("**🚨 Key Risk Drivers**")
+                    st.markdown(f"""
+                    <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; margin-top: 0.5rem; margin-bottom: 0.4rem; color: #0f172a; font-size: 0.95rem;">
+                        <div style="color: #ef4444; display: inline-flex; align-items: center;">{SVG_ALERT_TRIANGLE}</div>
+                        <span>Key Risk Drivers</span>
+                    </div>
+                    """, unsafe_allow_html=True)
                     drivers = row.get("narrative_risk_drivers") or row.get("risk_flags") or []
                     if isinstance(drivers, str):
                         try:
@@ -601,7 +650,12 @@ with tab1:
                         st.markdown("<span style='color: #94a3b8; font-style: italic; font-size: 0.88rem;'>No active risk drivers identified.</span>", unsafe_allow_html=True)
 
                 with col_action:
-                    st.markdown("**✅ Recommended Actions**")
+                    st.markdown(f"""
+                    <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; margin-top: 0.5rem; margin-bottom: 0.4rem; color: #0f172a; font-size: 0.95rem;">
+                        <div style="color: #10b981; display: inline-flex; align-items: center;">{SVG_CHECK_CIRCLE}</div>
+                        <span>Recommended Actions</span>
+                    </div>
+                    """, unsafe_allow_html=True)
                     actions = row.get("narrative_actions") or []
                     if isinstance(actions, str):
                         try:
@@ -635,7 +689,12 @@ with tab1:
                 nps_score = row.get("nps_score")
                 if pd.notna(verbatim) and str(verbatim).strip():
                     st.markdown("---")
-                    st.markdown("**💬 NPS Customer Verbatim Feedback**")
+                    st.markdown(f"""
+                    <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; margin-top: 0.5rem; margin-bottom: 0.4rem; color: #0f172a; font-size: 0.95rem;">
+                        <div style="color: #4f46e5; display: inline-flex; align-items: center;">{SVG_MESSAGE_SQUARE}</div>
+                        <span>NPS Customer Verbatim Feedback</span>
+                    </div>
+                    """, unsafe_allow_html=True)
                     lang = str(row.get("detected_language", "en"))
                     translated = row.get("english_translation")
                     
@@ -643,8 +702,8 @@ with tab1:
                         st.markdown(f"""
                         <div style="background-color: #fffbeb; border: 1px solid #fef3c7; border-radius: 12px; padding: 1rem; margin-top: 8px;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                                <span style="font-size: 0.7rem; background-color: #f59e0b; color: white; padding: 2px 8px; border-radius: 9999px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">
-                                    🌐 Translated from {lang.upper()}
+                                <span style="font-size: 0.7rem; background-color: #f59e0b; color: white; padding: 2px 8px; border-radius: 9999px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; display: inline-flex; align-items: center; gap: 4px;">
+                                    {SVG_GLOBE} Translated from {lang.upper()}
                                 </span>
                                 <span style="font-size: 0.8rem; color: #78350f; font-weight: 600;">NPS Score: {int(nps_score)}/10</span>
                             </div>
@@ -671,7 +730,12 @@ with tab1:
                 breakdown = row.get("signal_breakdown")
                 if isinstance(breakdown, dict):
                     st.markdown("---")
-                    st.markdown("**📊 Risk Signal Breakdown**")
+                    st.markdown(f"""
+                    <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; margin-top: 0.5rem; margin-bottom: 0.4rem; color: #0f172a; font-size: 0.95rem;">
+                        <div style="color: #4f46e5; display: inline-flex; align-items: center;">{SVG_BAR_CHART_2}</div>
+                        <span>Risk Signal Breakdown</span>
+                    </div>
+                    """, unsafe_allow_html=True)
                     
                     sig_labels = {
                         "usage_decline_score":   "Usage Decline Trend",
@@ -833,9 +897,11 @@ with tab3:
 
     if not insights:
         # User requested clean message when insights are not generated due to Gemini rate limits
-        st.markdown("""
+        st.markdown(f"""
         <div style="background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 12px; padding: 2rem; text-align: center; margin-bottom: 2rem;">
-            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">💡</div>
+            <div style="color: #94a3b8; display: flex; justify-content: center; margin-bottom: 0.75rem;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-lightbulb"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A5 5 0 0 0 8 8c0 1 .3 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
+            </div>
             <h3 style="margin: 0; font-size: 1.15rem; color: #475569; font-weight: 600;">Portfolio Insights Not Available</h3>
             <p style="color: #64748b; font-size: 0.9rem; max-width: 480px; margin: 0.5rem auto 0 auto; line-height: 1.5;">
                 Cross-portfolio trend analysis is disabled or the Gemini API rate limit was reached. Complete data enrichment to enable AI-powered non-obvious pattern matching.
@@ -849,42 +915,64 @@ with tab3:
             st.markdown(f"""
             <div class="portfolio-summary-box">
                 <div style="font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em;
-                            color:#4f46e5; margin-bottom:0.6rem;">
-                    📊 Executive Summary
+                            color:#4f46e5; margin-bottom:0.6rem; display: flex; align-items: center; gap: 6px;">
+                    {SVG_BAR_CHART_2} Executive Summary
                 </div>
                 <div style="font-size:0.95rem; line-height:1.6; color:#1e293b;">{exec_summary}</div>
             </div>
             """, unsafe_allow_html=True)
 
-        st.markdown(f"### 💡 {len(insights)} Cross-Portfolio Findings")
+        st.markdown(f"""
+        <div style="display: flex; align-items: center; gap: 10px; margin-top: 1.5rem; margin-bottom: 0.4rem;">
+            <div style="color: #f59e0b; display: inline-flex; align-items: center;">{SVG_LIGHTBULB}</div>
+            <h3 style="margin: 0; font-size: 1.35rem; font-weight: 700; color: #0f172a;">{len(insights)} Cross-Portfolio Findings</h3>
+        </div>
+        """, unsafe_allow_html=True)
         st.markdown(
-            '<p style="color:#64748b; font-size:0.875rem; margin-bottom:1.5rem;">'
+            '<p style="color:#64748b; font-size:0.875rem; margin-bottom:1.5rem; margin-top:0;">'
             'Compound risk vectors and patterns identified by analyzing global data signals.</p>',
             unsafe_allow_html=True,
         )
 
         for i, insight in enumerate(insights):
-            with st.expander(f"💡 {insight.get('title', f'Insight {i+1}')}", expanded=(i == 0)):
+            with st.expander(f"{insight.get('title', f'Insight {i+1}')}", expanded=(i == 0)):
                 obs_col, why_col = st.columns(2)
 
                 with obs_col:
-                    st.markdown("**📍 Observation**")
+                    st.markdown(f"""
+                    <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; margin-bottom: 0.4rem; color: #0f172a; font-size: 0.925rem;">
+                        <div style="color: #3b82f6; display: inline-flex; align-items: center;">{SVG_MAP_PIN}</div>
+                        <span>Observation</span>
+                    </div>
+                    """, unsafe_allow_html=True)
                     st.markdown(
-                        f'<div class="narrative-box" style="border-left-color: #3b82f6;">{insight.get("observation", "")}</div>',
+                        f'<div class="narrative-box" style="border-left-color: #3b82f6; margin-top: 0.2rem !important;">{insight.get("observation", "")}</div>',
                         unsafe_allow_html=True,
                     )
 
                 with why_col:
-                    st.markdown("**🔍 BizOps/Technical Impact**")
+                    st.markdown(f"""
+                    <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; margin-bottom: 0.4rem; color: #0f172a; font-size: 0.925rem;">
+                        <div style="color: #f59e0b; display: inline-flex; align-items: center;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                        </div>
+                        <span>BizOps/Technical Impact</span>
+                    </div>
+                    """, unsafe_allow_html=True)
                     st.markdown(
-                        f'<div class="narrative-box" style="border-left-color: #f59e0b;">{insight.get("why_non_obvious", "")}</div>',
+                        f'<div class="narrative-box" style="border-left-color: #f59e0b; margin-top: 0.2rem !important;">{insight.get("why_non_obvious", "")}</div>',
                         unsafe_allow_html=True,
                     )
 
-                st.markdown("**✅ Recommended Structural Action**")
+                st.markdown(f"""
+                <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; margin-top: 0.5rem; margin-bottom: 0.4rem; color: #0f172a; font-size: 0.925rem;">
+                    <div style="color: #10b981; display: inline-flex; align-items: center;">{SVG_CHECK_CIRCLE}</div>
+                    <span>Recommended Structural Action</span>
+                </div>
+                """, unsafe_allow_html=True)
                 st.markdown(
-                    f'<div style="background-color: #ecfdf5; border: 1px solid #d1fae5; border-radius: 8px; padding: 0.75rem 1rem; color: #065f46; font-size: 0.9rem; display: flex; gap: 8px; align-items: start; margin-top: 0.5rem;">'
-                    f'<span style="font-weight: bold; color: #10b981;">✓</span>'
+                    f'<div style="background-color: #ecfdf5; border: 1px solid #d1fae5; border-radius: 8px; padding: 0.75rem 1rem; color: #065f46; font-size: 0.9rem; display: flex; gap: 8px; align-items: start; margin-top: 0.2rem;">'
+                    f'<span style="font-weight: bold; color: #10b981; line-height: 1.1;">✓</span>'
                     f'<span>{insight.get("action", "")}</span>'
                     f'</div>',
                     unsafe_allow_html=True,
@@ -900,9 +988,16 @@ with tab3:
 
     # Silent churn spotlight
     st.markdown("---")
-    st.markdown("### 🔇 Silent Churn Spotlight")
+    st.markdown(f"""
+    <div style="display: flex; align-items: center; gap: 10px; margin-top: 2rem; margin-bottom: 0.4rem;">
+        <div style="color: #7c3aed; display: inline-flex; align-items: center;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trending-down"><polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/><polyline points="16 17 22 17 22 11"/></svg>
+        </div>
+        <h3 style="margin: 0; font-size: 1.35rem; font-weight: 700; color: #0f172a;">Silent Churn Spotlight</h3>
+    </div>
+    """, unsafe_allow_html=True)
     st.markdown(
-        '<p style="color:#64748b; font-size:0.875rem; margin-bottom:1rem;">'
+        '<p style="color:#64748b; font-size:0.875rem; margin-bottom:1rem; margin-top:0;">'
         'Accounts with positive NPS (≥ 7) but substantial 6-month product usage declines — highly deceptive churn targets.</p>',
         unsafe_allow_html=True,
     )
