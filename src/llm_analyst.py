@@ -86,7 +86,7 @@ def _call_ollama(prompt: str) -> str:
         }
     }
     try:
-        response = requests.post(url, json=payload, timeout=90)
+        response = requests.post(url, json=payload, timeout=300)
         response.raise_for_status()
         return response.json().get("response", "").strip()
     except Exception as e:
