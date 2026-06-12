@@ -5,7 +5,7 @@ Picks up where the pipeline left off.
 
 Loads the existing output/risk_report.json, checks which accounts are
 missing LLM-generated narratives / CSM signals / portfolio insights,
-and calls Gemini only for those gaps.  Saves the enriched report back
+and calls Gemini only for those gaps. Saves the enriched report back
 to output/risk_report.json in place.
 
 Usage:
@@ -35,6 +35,12 @@ def is_real_narrative(text: str) -> bool:
         "Risk data computed but",
     ]
     return not any(p in text for p in placeholders)
+
+
+def save_report(report):
+    """Saves the current state of the report to disk."""
+    with open(REPORT_PATH, "w", encoding="utf-8") as f:
+        json.dump(report, f, indent=2, default=str)
 
 
 def main():
@@ -78,9 +84,9 @@ def main():
         return
 
     print(f"\nTotal LLM calls needed: {total_calls}")
-    print("Starting enrichment (4s between calls to respect rate limits)...\n")
+    print("Starting enrichment (saving progress after each call)...\n")
 
-    # ── Init Gemini ───────────────────────────────────────────────────────────
+    # ── Init Gemini / Ollama ──────────────────────────────────────────────────
     from src.llm_analyst import (
         _get_client,
         extract_csm_signals,
@@ -106,6 +112,8 @@ def main():
                 "key_stakeholder_concern": result.get("key_stakeholder_concern"),
                 "csm_recommended_action":  result.get("recommended_action"),
             })
+            report["accounts"] = list(acct_by_id.values())
+            save_report(report)
             if os.getenv("LLM_PROVIDER", "gemini").lower() == "gemini":
                 time.sleep(4)
     else:
@@ -128,6 +136,8 @@ def main():
                 "sentiment_alignment": result.get("sentiment_alignment", "consistent"),
                 "alignment_note":      result.get("alignment_note", ""),
             })
+            report["accounts"] = list(acct_by_id.values())
+            save_report(report)
             if os.getenv("LLM_PROVIDER", "gemini").lower() == "gemini":
                 time.sleep(4)
     else:
@@ -146,6 +156,8 @@ def main():
                 "narrative_actions":      narrative.get("recommended_actions", []),
                 "narrative_urgency":      narrative.get("urgency_note", ""),
             })
+            report["accounts"] = list(acct_by_id.values())
+            save_report(report)
             if os.getenv("LLM_PROVIDER", "gemini").lower() == "gemini":
                 time.sleep(6)
     else:
@@ -165,17 +177,12 @@ def main():
         }
         insights = generate_portfolio_insights(high_risk, summary, model)
         report["portfolio_insights"] = insights
+        save_report(report)
         print("  -> Portfolio insights generated.")
     else:
         print("[4/4] Portfolio insights - already complete, skipping.")
 
-    # ── Save enriched report ──────────────────────────────────────────────────
-    report["accounts"] = list(acct_by_id.values())
-
-    with open(REPORT_PATH, "w", encoding="utf-8") as f:
-        json.dump(report, f, indent=2, default=str)
-
-    print(f"\nReport saved to {REPORT_PATH}")
+    print(f"\nReport fully saved and updated in {REPORT_PATH}")
     print("\nAll done! Launch the dashboard with:")
     print("  streamlit run app.py")
 
