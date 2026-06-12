@@ -914,43 +914,16 @@ with tab3:
         ].sort_values("usage_decline_score", ascending=False)
 
         if not sc_df.empty:
-            # Custom HTML structured table for premium look
-            rows_html = ""
-            for _, row in sc_df.iterrows():
-                tier = row.get("risk_tier", "Low")
-                badge = tier_badge(tier)
-                rows_html += f"""
-                <tr style="border-bottom: 1px solid #e2e8f0;">
-                    <td style="padding: 12px; font-weight: 600; color: #1e293b;">{row['account_name']}</td>
-                    <td style="padding: 12px; color: #475569; font-weight: 500;">{fmt_arr(row['arr'])}</td>
-                    <td style="padding: 12px; font-weight: 600; color: #10b981;">{int(row['nps_score'])}/10</td>
-                    <td style="padding: 12px; color: #ef4444; font-weight: 600;">-{int(row['usage_decline_score']*100)}%</td>
-                    <td style="padding: 12px;">{badge}</td>
-                    <td style="padding: 12px; color: #475569;">{row['contract_end_date']}</td>
-                    <td style="padding: 12px; color: #475569;">{row['csm_name']}</td>
-                </tr>
-                """
+            # Format columns for display in the native Streamlit data grid
+            display_df = pd.DataFrame()
+            display_df["Account Name"] = sc_df["account_name"]
+            display_df["ARR"] = sc_df["arr"].apply(fmt_arr)
+            display_df["NPS Score"] = sc_df["nps_score"].apply(lambda x: f"{int(x)}/10" if pd.notna(x) else "N/A")
+            display_df["Usage Decline"] = sc_df["usage_decline_score"].apply(lambda x: f"-{int(x*100)}%")
+            display_df["Risk Level"] = sc_df["risk_tier"].apply(lambda x: {"High": "🔴 High", "Medium": "🟡 Medium", "Low": "🟢 Low"}.get(x, x))
+            display_df["Contract Renewal"] = sc_df["contract_end_date"]
+            display_df["CSM Owner"] = sc_df["csm_name"]
             
-            table_html = f"""
-            <div style="overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 12px; background-color: white; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05); margin-top: 0.5rem;">
-                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.88rem; font-family: 'Inter', sans-serif;">
-                    <thead>
-                        <tr style="background-color: #f8fafc; border-bottom: 2px solid #e2e8f0; color: #475569; font-weight: 600;">
-                            <th style="padding: 12px;">Account Name</th>
-                            <th style="padding: 12px;">ARR</th>
-                            <th style="padding: 12px;">NPS Score</th>
-                            <th style="padding: 12px;">Usage Decline</th>
-                            <th style="padding: 12px;">Risk Level</th>
-                            <th style="padding: 12px;">Contract Renewal</th>
-                            <th style="padding: 12px;">CSM Owner</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {rows_html}
-                    </tbody>
-                </table>
-            </div>
-            """
-            st.markdown(table_html, unsafe_allow_html=True)
+            st.dataframe(display_df, use_container_width=True, hide_index=True)
         else:
             st.success("No active accounts meet the silent churn risk definition in current filters.")
