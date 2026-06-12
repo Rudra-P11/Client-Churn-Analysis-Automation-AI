@@ -27,7 +27,7 @@ load_dotenv(_project_root / ".env")
 load_dotenv(_src_dir / ".env")
 
 # ─────────────────────────────────────────────────────────────────────────────
-# LLM client setup & routing
+# LLM client setup, routing, & robust parsing
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _get_client() -> genai.GenerativeModel | None:
@@ -102,6 +102,42 @@ def _call_llm(prompt: str, model: Any = None) -> str:
         return _call_gemini(prompt, model)
 
 
+def _parse_json(text: str) -> Any:
+    """Extract and parse JSON from LLM output, handling markdown fences, trailing commas, and preambles."""
+    import re
+    text = text.strip()
+
+    # Try direct parsing first
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        pass
+
+    # Look for JSON code blocks
+    code_block_match = re.search(r"```(?:json)?\s*(\{[\s\S]*?\})\s*```", text)
+    if code_block_match:
+        try:
+            return json.loads(code_block_match.group(1).strip())
+        except json.JSONDecodeError:
+            text = code_block_match.group(1).strip()
+
+    # Find first '{' and last '}'
+    first_bracket = text.find("{")
+    last_bracket = text.rfind("}")
+    if first_bracket != -1 and last_bracket != -1 and last_bracket > first_bracket:
+        candidate = text[first_bracket:last_bracket + 1].strip()
+        try:
+            return json.loads(candidate)
+        except json.JSONDecodeError:
+            # Clean up trailing commas before closing brackets
+            cleaned = re.sub(r",\s*([\]}])", r"\1", candidate)
+            try:
+                return json.loads(cleaned)
+            except json.JSONDecodeError as e:
+                raise e
+    raise ValueError("No JSON object could be extracted from response.")
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Task 1: CSM Note Sentiment & Signal Extraction
 # ─────────────────────────────────────────────────────────────────────────────
@@ -152,13 +188,7 @@ Return JSON with keys: sentiment_score, risk_flags, positive_signals, key_stakeh
 
     try:
         raw = _call_llm(prompt, model)
-        # Strip markdown code fences if present
-        raw = raw.strip()
-        if raw.startswith("```"):
-            raw = raw.split("```")[1]
-            if raw.startswith("json"):
-                raw = raw[4:]
-        result = json.loads(raw.strip())
+        result = _parse_json(raw)
         # Add inverted score as risk score (1 - sentiment = risk)
         sentiment = float(result.get("sentiment_score", 0.5))
         result["csm_sentiment_score"] = round(1.0 - sentiment, 4)
@@ -215,12 +245,7 @@ Respond ONLY with JSON:
 
     try:
         raw = _call_llm(prompt, model)
-        raw = raw.strip()
-        if raw.startswith("```"):
-            raw = raw.split("```")[1]
-            if raw.startswith("json"):
-                raw = raw[4:]
-        return json.loads(raw.strip())
+        return _parse_json(raw)
     except Exception as e:
         print(f"  [LLM] NPS translation failed: {e}")
         return {
@@ -311,13 +336,7 @@ Return ONLY valid JSON with these 4 keys."""
 
     try:
         raw = _call_llm(prompt, model)
-        raw = raw.strip()
-        if raw.startswith("```"):
-            raw = raw.split("```")[1]
-            if raw.startswith("json"):
-                raw = raw[4:]
-        result = json.loads(raw.strip())
-        return result
+        return _parse_json(raw)
     except Exception as e:
         print(f"  [LLM] Narrative generation failed for {account_data.get('account_name')}: {e}")
         return {
@@ -398,12 +417,7 @@ Return ONLY valid JSON:
 
     try:
         raw = _call_llm(prompt, model)
-        raw = raw.strip()
-        if raw.startswith("```"):
-            raw = raw.split("```")[1]
-            if raw.startswith("json"):
-                raw = raw[4:]
-        return json.loads(raw.strip())
+        return _parse_json(raw)
     except Exception as e:
         print(f"  [LLM] Portfolio insights failed: {e}")
         return {
